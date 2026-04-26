@@ -1,0 +1,4 @@
+# This project runs inside Blender's internal Python environment.
+# No external pip installations are required.
+# Compatibility: Blender 3.6 / 4.0+
+# Core Libraries: bpy, math, os, mathutils
