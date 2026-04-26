@@ -4,7 +4,7 @@ This tool is a high-performance **Synthetic Data Generator** built for Blender. 
 
 By leveraging procedural texturing and automated scene manipulation, this script eliminates the "Data Bottleneck" in industrial automation, allowing for the generation of thousands of perfectly labeled, diverse training images in minutes.
 
-## SCreenshots
+## Screenshots
 <img width="458" height="300" alt="image" src="https://github.com/user-attachments/assets/316683ca-765d-4efc-9493-3440a8e2eca2" />
 <img width="451" height="100" alt="image" src="https://github.com/user-attachments/assets/8d291401-1e40-4070-b10e-2c360ba38fac" />
 
