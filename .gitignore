@@ -1,0 +1,12 @@
+# Blender backup files
+*.blend1
+*.blend[0-9]
+
+# Render output folder (Adjust if you change save_folder in script)
+blender_out/
+renders/
+
+# Python/IDE/OS junk
+__pycache__/
+.vscode/
+.DS_Store
