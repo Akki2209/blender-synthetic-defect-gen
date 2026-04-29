@@ -8,7 +8,10 @@ def run_automated_render_workflow():
     # =========================================================================
     # CONFIGURATION
     # =========================================================================
-    save_folder = "D:/blender_out/"
+    #save_folder = "D:/blender_out/Stain/"
+    #save_folder = "D:/blender_out/Gouge/"
+    save_folder = "D:/blender_out/Discoloration/"
+    #save_folder = "D:/blender_out/Golden/"
 
     CENTER_X = 1.394644
     CENTER_Y = 5.5145304
@@ -20,19 +23,19 @@ def run_automated_render_workflow():
     CAM_Z_ROTATION = 0.0
     USER_TILT_ANGLE = 40.0
 
-    LIGHT_POWER = 800
+    LIGHT_POWER = 1200
     LIGHT_Z_OFFSET = -1.5
 
     # -------------------------------------------------------------------------
     # 🔥 DEFECT 1: NOISE BUMP
     # -------------------------------------------------------------------------
-    ENABLE_NOISE_BUMP = True
+    ENABLE_NOISE_BUMP = False
     D1_NOISE_SCALE = 4.0
     D1_NOISE_DETAIL = 2.0
     D1_NOISE_DISTORTION = 0.6
     D1_RAMP_POS_WHITE = 0.3
-    D1_BUMP_STRENGTH = 4.0
-    D1_BUMP_DISTANCE = 0.2
+    D1_BUMP_STRENGTH = 4.3
+    D1_BUMP_DISTANCE = 0.3
 
     # -------------------------------------------------------------------------
     # 🔥 DEFECT 2: MAGIC BUMP
@@ -50,13 +53,13 @@ def run_automated_render_workflow():
     # -------------------------------------------------------------------------
     # 🔥 DEFECT 3: DYNAMIC PAINT (New)
     # -------------------------------------------------------------------------
-    ENABLE_PAINT_DEFECT = False
-    D3_PAINT_RGB = (0.8, 0.8, 0.7, 1.0) # Base color
-    D3_DEFECT_RGB = (0.5, 0.4, 0.1, 1.0) # Defect color
-    D3_COUNT = 10
-    D3_SIZE = 0.6
-    D3_INTENSITY = 0.16
-    D3_SEED = 0.1
+    ENABLE_PAINT_DEFECT = True
+    D3_PAINT_RGB = (1, 1, 1, 1.0) # Base color
+    D3_DEFECT_RGB = (0.5, 0.25, 0.0, 1.0) # Defect color
+    D3_COUNT = 3
+    D3_SIZE = 0.7
+    D3_INTENSITY = 0.3
+    D3_SEED = 1
 
     # -------------------------------------------------------------------------
 
@@ -211,8 +214,8 @@ def run_automated_render_workflow():
         cam_obj.location = (x, y, z)
         cam_obj.rotation_euler = (Vector((CENTER_X, CENTER_Y, CAMERA_TARGET_Z)) - cam_obj.location).to_track_quat('-Z', 'Y').to_euler()
         l_data = bpy.data.lights.new(f"Light_{suffix}", type='AREA')
-        l_data.energy, l_data.specular_factor = 450, 0.0
-        l_data.shape, l_data.size, l_data.size_y = 'RECTANGLE', 10, 5
+        l_data.energy, l_data.specular_factor = 1200, 0.0
+        l_data.shape, l_data.size, l_data.size_y = 'RECTANGLE', 10, 10
         l_obj = bpy.data.objects.new(f"Light_{suffix}_Obj", l_data)
         bpy.context.collection.objects.link(l_obj)
         l_obj.location = (x, y, z + LIGHT_Z_OFFSET)
