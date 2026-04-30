@@ -7,6 +7,10 @@ By leveraging procedural texturing and automated scene manipulation, this script
 ## Screenshots
 <img width="458" height="300" alt="image" src="https://github.com/user-attachments/assets/316683ca-765d-4efc-9493-3440a8e2eca2" />
 <img width="451" height="100" alt="image" src="https://github.com/user-attachments/assets/8d291401-1e40-4070-b10e-2c360ba38fac" />
+<img width="358" height="200" alt="image" src="https://github.com/user-attachments/assets/505f9642-18d7-414a-bda7-ab0fad457f32" />
+<img width="358" height="200" alt="image" src="https://github.com/user-attachments/assets/38cf8b61-b6cb-44e5-b138-e7b2faff53b5" />
+
+
 
 
 ---
