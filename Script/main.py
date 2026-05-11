@@ -9,8 +9,8 @@ def run_automated_render_workflow():
     # CONFIGURATION
     # =========================================================================
     #save_folder = "D:/blender_out/Stain/"
-    #save_folder = "D:/blender_out/Gouge/"
-    save_folder = "D:/blender_out/Discoloration/"
+    save_folder = "D:/blender_out/Gouge/"
+    #save_folder = "D:/blender_out/Discoloration/"
     #save_folder = "D:/blender_out/Golden/"
 
     CENTER_X = 1.394644
@@ -27,7 +27,7 @@ def run_automated_render_workflow():
     LIGHT_Z_OFFSET = -1.5
 
     # -------------------------------------------------------------------------
-    # 🔥 DEFECT 1: NOISE BUMP
+    # 🔥 DEFECT 1: Gouge
     # -------------------------------------------------------------------------
     ENABLE_NOISE_BUMP = False
     D1_NOISE_SCALE = 4.0
@@ -38,7 +38,7 @@ def run_automated_render_workflow():
     D1_BUMP_DISTANCE = 0.3
 
     # -------------------------------------------------------------------------
-    # 🔥 DEFECT 2: MAGIC BUMP
+    # 🔥 DEFECT 2: BUMP
     # -------------------------------------------------------------------------
     ENABLE_MAGIC_BUMP = False
     D2_MAGIC_SCALE = 3.0
@@ -51,15 +51,37 @@ def run_automated_render_workflow():
     D2_BUMP_DISTANCE = 0.2
 
     # -------------------------------------------------------------------------
-    # 🔥 DEFECT 3: DYNAMIC PAINT (New)
+    # 🔥 DEFECT 3: Stain/Discoloration
     # -------------------------------------------------------------------------
     ENABLE_PAINT_DEFECT = True
     D3_PAINT_RGB = (1, 1, 1, 1.0) # Base color
-    D3_DEFECT_RGB = (0.5, 0.25, 0.0, 1.0) # Defect color
-    D3_COUNT = 3
-    D3_SIZE = 0.7
-    D3_INTENSITY = 0.3
-    D3_SEED = 1
+    D3_DEFECT_RGB = (0.5, 0.2, 0.2, 1.0) # Defect color
+    D3_COUNT = 5
+    D3_SIZE = 0.6
+    D3_INTENSITY = 0.4
+    D3_SEED = 0.3
+
+    # -------------------------------------------------------------------------
+    # 🔥 DEFECT 4: Scratch
+    # -------------------------------------------------------------------------
+    ENABLE_DEFECT_4 = False
+
+    D4_VORONOI_SCALE = 20.0
+    D4_VORONOI_RANDOM = 1.0
+
+    D4_BOTTOM_SCALE = 0.1
+    D4_BOTTOM_RANDOM = 1.0
+
+    D4_NOISE_SCALE = 4.7
+    D4_NOISE_DETAIL = 3.5
+    D4_NOISE_ROUGHNESS = 0.0
+    D4_NOISE_DISTORTION = 0.4
+
+    D4_SUBTRACT_VALUE = 0.4
+    D4_DIVIDE_VALUE = 0.003
+
+    D4_RAMP_BLACK_POS = 0.0
+    D4_RAMP_WHITE_POS = 0.8
 
     # -------------------------------------------------------------------------
 
@@ -174,6 +196,151 @@ def run_automated_render_workflow():
         links.new(node_bsdf_base.outputs['BSDF'], node_mix_shader.inputs[1])
         links.new(node_bsdf_defect.outputs['BSDF'], node_mix_shader.inputs[2])
         current_shader_out = node_mix_shader.outputs['Shader']
+        
+    # ---------------------------------------------------------------------
+    # Defect 4 : Voronoi Flow Defect
+    # ---------------------------------------------------------------------
+    if ENABLE_DEFECT_4:
+
+        # =========================================================
+        # VORONOI TOP
+        # =========================================================
+        node_voronoi_d4_top = nodes.new(type='ShaderNodeTexVoronoi')
+        node_voronoi_d4_top.location = (-1200, -900)
+
+        node_voronoi_d4_top.voronoi_dimensions = '3D'
+        node_voronoi_d4_top.feature = 'F1'
+        node_voronoi_d4_top.distance = 'EUCLIDEAN'
+
+        node_voronoi_d4_top.inputs["Scale"].default_value = D4_VORONOI_SCALE
+        node_voronoi_d4_top.inputs["Randomness"].default_value = D4_VORONOI_RANDOM
+
+        # =========================================================
+        # VORONOI BOTTOM
+        # =========================================================
+        node_voronoi_d4_bottom = nodes.new(type='ShaderNodeTexVoronoi')
+        node_voronoi_d4_bottom.location = (-1200, -1200)
+
+        node_voronoi_d4_bottom.voronoi_dimensions = '3D'
+        node_voronoi_d4_bottom.feature = 'DISTANCE_TO_EDGE'
+
+        node_voronoi_d4_bottom.inputs["Scale"].default_value = D4_BOTTOM_SCALE
+        node_voronoi_d4_bottom.inputs["Randomness"].default_value = D4_BOTTOM_RANDOM
+
+        # =========================================================
+        # VECTOR SUBTRACT
+        # =========================================================
+        node_subtract_vec_d4 = nodes.new(type='ShaderNodeVectorMath')
+        node_subtract_vec_d4.location = (-900, -900)
+        node_subtract_vec_d4.operation = 'SUBTRACT'
+
+        # =========================================================
+        # VECTOR ADD
+        # =========================================================
+        node_add_vec_d4 = nodes.new(type='ShaderNodeVectorMath')
+        node_add_vec_d4.location = (-650, -900)
+        node_add_vec_d4.operation = 'ADD'
+
+        # =========================================================
+        # NOISE
+        # =========================================================
+        node_noise_d4 = nodes.new(type='ShaderNodeTexNoise')
+        node_noise_d4.location = (-400, -900)
+
+        node_noise_d4.noise_dimensions = '3D'
+
+        node_noise_d4.inputs["Scale"].default_value = D4_NOISE_SCALE
+        node_noise_d4.inputs["Detail"].default_value = D4_NOISE_DETAIL
+        node_noise_d4.inputs["Roughness"].default_value = D4_NOISE_ROUGHNESS
+        node_noise_d4.inputs["Distortion"].default_value = D4_NOISE_DISTORTION
+
+        # =========================================================
+        # SUBTRACT
+        # =========================================================
+        node_math_sub_d4 = nodes.new(type='ShaderNodeMath')
+        node_math_sub_d4.location = (-150, -900)
+
+        node_math_sub_d4.operation = 'SUBTRACT'
+        node_math_sub_d4.inputs[1].default_value = D4_SUBTRACT_VALUE
+
+        # =========================================================
+        # ABSOLUTE
+        # =========================================================
+        node_abs_d4 = nodes.new(type='ShaderNodeMath')
+        node_abs_d4.location = (100, -900)
+
+        node_abs_d4.operation = 'ABSOLUTE'
+
+        # =========================================================
+        # DIVIDE
+        # =========================================================
+        node_divide_d4 = nodes.new(type='ShaderNodeMath')
+        node_divide_d4.location = (350, -900)
+
+        node_divide_d4.operation = 'DIVIDE'
+        node_divide_d4.inputs[1].default_value = D4_DIVIDE_VALUE
+
+        # =========================================================
+        # COLOR RAMP
+        # =========================================================
+        node_ramp_d4 = nodes.new(type='ShaderNodeValToRGB')
+        node_ramp_d4.location = (600, -900)
+
+        node_ramp_d4.color_ramp.elements[0].position = D4_RAMP_BLACK_POS
+        node_ramp_d4.color_ramp.elements[0].color = (1, 1, 1, 1)
+
+        node_ramp_d4.color_ramp.elements[1].position = D4_RAMP_WHITE_POS
+        node_ramp_d4.color_ramp.elements[1].color = (1, 0, 0, 1)
+
+        # =========================================================
+        # DEFECT BSDF
+        # =========================================================
+        node_bsdf_d4 = nodes.new(type='ShaderNodeBsdfPrincipled')
+        node_bsdf_d4.location = (900, -900)
+
+        node_bsdf_d4.inputs['Base Color'].default_value = (0.0, 0.0, 0.0, 1)
+        node_bsdf_d4.inputs['Roughness'].default_value = 0.95
+
+        # =========================================================
+        # MIX SHADER
+        # =========================================================
+        node_mix_d4 = nodes.new(type='ShaderNodeMixShader')
+        node_mix_d4.location = (1200, -700)
+
+        # =========================================================
+        # CONNECTIONS
+        # =========================================================
+
+        # Texture Coordinate
+        links.new(node_tex_coord.outputs['Object'], node_voronoi_d4_top.inputs['Vector'])
+        links.new(node_tex_coord.outputs['Object'], node_voronoi_d4_bottom.inputs['Vector'])
+
+        # Updated routing
+        links.new(node_tex_coord.outputs['Object'], node_subtract_vec_d4.inputs[0])
+        links.new(node_voronoi_d4_top.outputs['Position'], node_subtract_vec_d4.inputs[1])
+
+        links.new(node_subtract_vec_d4.outputs['Vector'], node_add_vec_d4.inputs[0])
+        links.new(node_voronoi_d4_top.outputs['Color'], node_add_vec_d4.inputs[1])
+
+        # Flow
+        links.new(node_add_vec_d4.outputs['Vector'], node_noise_d4.inputs['Vector'])
+
+        links.new(node_noise_d4.outputs['Fac'], node_math_sub_d4.inputs[0])
+
+        links.new(node_math_sub_d4.outputs['Value'], node_abs_d4.inputs[0])
+
+        links.new(node_abs_d4.outputs['Value'], node_divide_d4.inputs[0])
+
+        links.new(node_divide_d4.outputs['Value'], node_ramp_d4.inputs['Fac'])
+
+        # Mix defect
+        links.new(node_ramp_d4.outputs['Color'], node_mix_d4.inputs[0])
+
+        links.new(current_shader_out, node_mix_d4.inputs[1])
+
+        links.new(node_bsdf_d4.outputs['BSDF'], node_mix_d4.inputs[2])
+
+        current_shader_out = node_mix_d4.outputs['Shader']
 
     # Final Linking (Chaining Normals and Surface)
     links.new(bump_noise.outputs['Normal'], bump_magic.inputs['Normal'])
